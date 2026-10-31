@@ -6,7 +6,7 @@ Repositorio oficial que contiene el desarrollo del proyecto de ventas e inventar
 
 - **Materia:** Lenguajes de Interfaz
 - **Unidad:** Unidad 2
-- **Alumno:**
+- **Alumnos:**
 - Erik Vladimir Medina Pacheco
 - Jennifer Scarlet Lugo Matinez
 - Oscar Mario Velarde Barraza
