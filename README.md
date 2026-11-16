@@ -16,7 +16,7 @@ Repositorio oficial que contiene el desarrollo del proyecto de ventas e inventar
 ## 📂 Contenido del Repositorio
 
 - **Proyecto/** - Código fuente principal en ensamblador del sistema de inventario y ventas.
-- **inventario.txt** - Archivo de datos base para la gestión de productos[cite: 2].
+- **inventario.txt** - Archivo de datos base para la gestión de productos.
 
 ---
 
@@ -38,7 +38,7 @@ El sistema administra un catálogo con una capacidad máxima de **10 productos**
 4. Recibir mercancía
 5. Vender
 6. Resumen
-7. Guardar[cite: 2]
+7. Guardar
 8. Cargar
 9. Ver regla de negocio
 0. Salir
@@ -93,7 +93,7 @@ Para optimizar las dinámicas de venta al mayoreo, el sistema incorpora una regl
 
 # Proyecto: Versión de la Unidad 3.
 
-Esta sección documenta las optimizaciones, refactorizaciones y mejoras implementadas en la **Unidad 3** respecto a la versión anterior (Unidad 2): incorporación de macros, uso de la directiva `USES`, reutilización avanzada de procedimientos y robustecimiento en la carga de archivos[cite: 1].
+Esta sección documenta las optimizaciones, refactorizaciones y mejoras implementadas en la **Unidad 3** respecto a la versión anterior (Unidad 2): incorporación de macros, uso de la directiva `USES`, reutilización avanzada de procedimientos y robustecimiento en la carga de archivos.
 
 ---
 
@@ -101,18 +101,18 @@ Esta sección documenta las optimizaciones, refactorizaciones y mejoras implemen
 
 | Parte del Programa | Problema Detectado | Cambio Implementado | Beneficio Principal |
 | :--- | :--- | :--- | :--- |
-| **Mensajes en pantalla** | La secuencia `mov edx, OFFSET`, `call WriteString` y `call Crlf` se repetía en 64 puntos del código[cite: 1]. | Creación de las macros `mImprimirMensaje` y `mImprimirLinea` (preservando `EDX` con `push`/`pop`)[cite: 1]. | Reducción de 108 líneas de código redundantes; centralización del formato de salida[cite: 1]. |
-| **Registros en procedimientos** | 11 procedimientos gestionaban manualmente el respaldo y restauración con `push` y `pop` (58 líneas)[cite: 1]. | Implementación sistemática de la directiva **`PROC USES`**[cite: 1]. | El ensamblador genera automáticamente el código de pila seguro, eliminando riesgos de desbalanceo[cite: 1]. |
-| **Copia de cadenas** | El procedimiento `copiarCadenaCompleta` ocupaba 16 líneas gestionando registros para llamadas cortas repetidas 4 veces[cite: 1]. | Creación de la macro `mCopiarCadena` con la etiqueta local `LOCAL ciclo_copia`[cite: 1]. | Se elimina la sobrecarga de `call`, `ret` y manipulación manual de pila (ahorro de 6 líneas)[cite: 1]. |
-| **Lectura de teclado** | `leerLineaTeclado` mezclaba tareas de gestión de registros directamente con la lógica de entrada[cite: 2]. | Creación de la macro `mLeeTeclado` combinada con `USES ecx edx` en el procedimiento[cite: 2]. | Mayor modularidad y separación de responsabilidades en la lectura de consola[cite: 2]. |
-| **Carga desde archivo** | `convertirLineaARegistro` leía un campo extra inválido y los archivos con saltos de línea manuales (`CR/LF`) solían rechazarse[cite: 2]. | Supresión de lecturas sobrantes e inclusión de filtros lógicos en `copiarCampoHastaDelimitador` para omitir caracteres 13 y 10[cite: 2]. | El sistema procesa de forma tolerante archivos de texto editados externamente[cite: 2]. |
+| **Mensajes en pantalla** | La secuencia `mov edx, OFFSET`, `call WriteString` y `call Crlf` se repetía en 64 puntos del código. | Creación de las macros `mImprimirMensaje` y `mImprimirLinea` (preservando `EDX` con `push`/`pop`). | Reducción de 108 líneas de código redundantes; centralización del formato de salida. |
+| **Registros en procedimientos** | 11 procedimientos gestionaban manualmente el respaldo y restauración con `push` y `pop` (58 líneas). | Implementación sistemática de la directiva **`PROC USES`**. | El ensamblador genera automáticamente el código de pila seguro, eliminando riesgos de desbalanceo. |
+| **Copia de cadenas** | El procedimiento `copiarCadenaCompleta` ocupaba 16 líneas gestionando registros para llamadas cortas repetidas 4 veces. | Creación de la macro `mCopiarCadena` con la etiqueta local `LOCAL ciclo_copia`. | Se elimina la sobrecarga de `call`, `ret` y manipulación manual de pila (ahorro de 6 líneas). |
+| **Lectura de teclado** | `leerLineaTeclado` mezclaba tareas de gestión de registros directamente con la lógica de entrada. | Creación de la macro `mLeeTeclado` combinada con `USES ecx edx` en el procedimiento. | Mayor modularidad y separación de responsabilidades en la lectura de consola. |
+| **Carga desde archivo** | `convertirLineaARegistro` leía un campo extra inválido y los archivos con saltos de línea manuales (`CR/LF`) solían rechazarse. | Supresión de lecturas sobrantes e inclusión de filtros lógicos en `copiarCampoHastaDelimitador` para omitir caracteres 13 y 10. | El sistema procesa de forma tolerante archivos de texto editados externamente. |
 
 ---
 
 ## 2. Fragmentos Representativos
 
 ### 2.1 Procedimiento Reutilizado: `pedirEnteroEnRango`
-Recibe el mensaje en `EDX`, el límite máximo en `EBX` y el mínimo en `ECX`[cite: 3]. Devuelve el valor numérico en `EAX` y reporta errores mediante la bandera de acarreo (`CF`)[cite: 3].
+Recibe el mensaje en `EDX`, el límite máximo en `EBX` y el mínimo en `ECX`. Devuelve el valor numérico en `EAX` y reporta errores mediante la bandera de acarreo (`CF`).
 
 ```assembly
 pedirEnteroEnRango PROC USES esi
@@ -135,9 +135,9 @@ pedirEnteroEnRango ENDP
 ```
 
 **Puntos clave de uso en `Main.asm`:**
-* **`registrarProducto`:** Validación de existencia inicial (0 a 100)[cite: 3].
-* **`recibirMercancia`:** Unidades recibidas (1 a 100)[cite: 3].
-* **`venderProducto`:** Cantidad de salida a comercializar (1 a 100)[cite: 3].
+* **`registrarProducto`:** Validación de existencia inicial (0 a 100).
+* **`recibirMercancia`:** Unidades recibidas (1 a 100).
+* **`venderProducto`:** Cantidad de salida a comercializar (1 a 100).
 
 ---
 
@@ -157,7 +157,7 @@ ENDM
 ```
 
 * **`mImprimirLinea`** reduce bloques repetitivos de 3 instrucciones a una sola línea limpia.
-* La macro **`mCopiarCadena`** utiliza etiquetas locales (`LOCAL`) para permitir expansiones seguras múltiples dentro de procedimientos complejos como `registrarProducto`[cite: 5].
+* La macro **`mCopiarCadena`** utiliza etiquetas locales (`LOCAL`) para permitir expansiones seguras múltiples dentro de procedimientos complejos como `registrarProducto`.
 
 ---
 
@@ -171,7 +171,7 @@ convertirEnteroACadena PROC USES ebx ecx edx edi
 convertirEnteroACadena ENDP
 ```
 
-Gracias a `USES`, el ensamblador gestiona de forma automática los registros salvaguardados al entrar y salir de la rutina, reduciendo verbosidad y errores humanos[cite: 6].
+Gracias a `USES`, el ensamblador gestiona de forma automática los registros salvaguardados al entrar y salir de la rutina, reduciendo verbosidad y errores humanos.
 
 ---
 
@@ -179,14 +179,14 @@ Gracias a `USES`, el ensamblador gestiona de forma automática los registros sal
 
 | Bloque Analizado | Versión Anterior | Versión Actual (Unidad 3) | Diferencia Neta |
 | :--- | :---: | :---: | :---: |
-| Mensajes sin salto de línea (20 usos)[cite: 6] | 40[cite: 6] | 20[cite: 6] | -20[cite: 6] |
-| Mensajes con salto de línea (44 usos)[cite: 6] | 132[cite: 6] | 44[cite: 6] | -88[cite: 6] |
-| Bloques `push`/`pop` manuales en 11 procedimientos[cite: 6] | 58[cite: 6] | 0[cite: 6] | -58[cite: 6] |
-| Transición de rutina de copia a macro[cite: 6] | 16[cite: 6] | 10[cite: 6] | -6[cite: 6] |
-| Declaración de macros nuevas[cite: 6, 7] | 0[cite: 6] | 10[cite: 6] | +10[cite: 6] |
-| Gestión de teclado (`mLeeTeclado`)[cite: 7] | 10[cite: 7] | 13[cite: 7] | +3[cite: 7] |
-| Robustez del cargador y manejo de `CR/LF`[cite: 7] | - | - | aprox. +4[cite: 7] |
-| **Impacto Total Estimado** | — | — | **Aprox. -155 líneas**[cite: 7] |
+| Mensajes sin salto de línea (20 usos) | 40 | 20 | -20 |
+| Mensajes con salto de línea (44 usos) | 132 | 44 | -88 |
+| Bloques `push`/`pop` manuales en 11 procedimientos | 58 | 0 | -58 |
+| Transición de rutina de copia a macro | 16 | 10 | -6 |
+| Declaración de macros nuevas[cite: 6, 7] | 0 | 10 | +10 |
+| Gestión de teclado (`mLeeTeclado`) | 10 | 13 | +3 |
+| Robustez del cargador y manejo de `CR/LF` | - | - | aprox. +4 |
+| **Impacto Total Estimado** | — | — | **Aprox. -155 líneas** |
 
 ---
 
@@ -194,14 +194,14 @@ Gracias a `USES`, el ensamblador gestiona de forma automática los registros sal
 
 | No. | Módulo / Operación | Entrada de Prueba | Resultado Esperado |
 | :---: | :--- | :--- | :--- |
-| **1** | Inventario vacío[cite: 7] | Opción `2`[cite: 7] | `"No hay productos registrados"`[cite: 7] |
-| **2** | Registro válido[cite: 7] | Opción `1`: `LAP-001`, `Lapiz`, `12.50`, `50`[cite: 7] | `"Producto registrado"`[cite: 7] |
-| **4** | Mostrar inventario[cite: 8] | Opción `2`[cite: 8] | Despliegue correcto de filas tabuladas con precios e existencias[cite: 8] |
-| **18** | Venta sin descuento[cite: 9] | Opción `5`: `LAP-001`, `5` unidades[cite: 9] | Importe base correcto ($62.50 MXN) y balance de stock actualizado[cite: 9] |
-| **19** | Venta con descuento (10+ uds)[cite: 9] | Opción `5`: `LAP-001`, `10` unidades[cite: 9] | Aplicación automática del 10% de bonificación por volumen[cite: 9] |
-| **24** | Resumen de sesión[cite: 10] | Opción `6`[cite: 10] | Conteo de productos, unidades totales, valor global e ingresos acumulados[cite: 10] |
-| **25** | Guardar en archivo[cite: 10] | Opción `7`[cite: 10] | Generación exitosa de `inventario.txt`[cite: 10] |
-| **26** | Carga de inventario[cite: 10] | Opción `8` (tras reinicio)[cite: 10] | Restauración íntegra de la estructura desde disco (`Productos: 2`)[cite: 10] |
+| **1** | Inventario vacío | Opción `2` | `"No hay productos registrados"` |
+| **2** | Registro válido | Opción `1`: `LAP-001`, `Lapiz`, `12.50`, `50` | `"Producto registrado"` |
+| **4** | Mostrar inventario | Opción `2` | Despliegue correcto de filas tabuladas con precios e existencias |
+| **18** | Venta sin descuento | Opción `5`: `LAP-001`, `5` unidades | Importe base correcto ($62.50 MXN) y balance de stock actualizado |
+| **19** | Venta con descuento (10+ uds) | Opción `5`: `LAP-001`, `10` unidades | Aplicación automática del 10% de bonificación por volumen |
+| **24** | Resumen de sesión | Opción `6` | Conteo de productos, unidades totales, valor global e ingresos acumulados |
+| **25** | Guardar en archivo | Opción `7` | Generación exitosa de `inventario.txt` |
+| **26** | Carga de inventario | Opción `8` (tras reinicio) | Restauración íntegra de la estructura desde disco (`Productos: 2`) |
 
 > **Formato interno en disco (`inventario.txt`):**
 > `INV1|LAP-001|Lapiz|1250|55|CUA-002|Cuaderno|4500|21|`
