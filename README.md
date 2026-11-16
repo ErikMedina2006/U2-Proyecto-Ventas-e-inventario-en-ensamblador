@@ -5,12 +5,12 @@ Repositorio oficial que contiene el desarrollo del proyecto de ventas e inventar
 ## 📋 Datos Generales
 
 - **Materia:** Lenguajes de Interfaz
-- **Unidad:** Unidad 2
+- **Unidad:** Unidad 2 y 3
 - **Alumnos:**
 - Erik Vladimir Medina Pacheco
 - Jennifer Scarlet Lugo Matinez
 - Oscar Mario Velarde Barraza
-- **Docente:** *Doc. Medina Jimenez Jose Luis*
+- **Docente:** *Dr. Medina Jimenez Jose Luis*
 - **Horario:** *10:00 - 11:00*
 
 ## 📂 Contenido del Repositorio
