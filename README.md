@@ -203,8 +203,8 @@ Gracias a `USES`, el ensamblador gestiona de forma automática los registros sal
 | **25** | Guardar en archivo[cite: 10] | Opción `7`[cite: 10] | Generación exitosa de `inventario.txt`[cite: 10] |
 | **26** | Carga de inventario[cite: 10] | Opción `8` (tras reinicio)[cite: 10] | Restauración íntegra de la estructura desde disco (`Productos: 2`)[cite: 10] |
 
-> **Formato interno en disco (`inventario.txt`):**[cite: 11]  
-> `INV1|LAP-001|Lapiz|1250|55|CUA-002|Cuaderno|4500|21|` *(Valores monetarios representados en centavos)*[cite: 11]
+> **Formato interno en disco (`inventario.txt`):**
+> `INV1|LAP-001|Lapiz|1250|55|CUA-002|Cuaderno|4500|21|`
 
 ## 🛠️ Tecnologías y Entorno
 
