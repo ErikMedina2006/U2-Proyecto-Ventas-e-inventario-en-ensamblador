@@ -91,6 +91,104 @@ Para optimizar las dinámicas de venta al mayoreo, el sistema incorpora una regl
 | 34 | Capacidad máxima | registrar hasta llegar a 10 y probar un 11.º | "Capacidad maxima alcanzada" | Exitosa |
 | 35 | Pila equilibrada | usar cualquier opción | Nunca aparece "ERROR: pila desbalanceada" | Exitosa |
 
+# Proyecto: Papelería, Ventas e Inventario (MASM x86 con Irvine32) - Unidad 3
+
+Esta sección documenta las optimizaciones, refactorizaciones y mejoras implementadas en la **Unidad 3** respecto a la versión anterior (Unidad 2): incorporación de macros, uso de la directiva `USES`, reutilización avanzada de procedimientos y robustecimiento en la carga de archivos[cite: 1].
+
+---
+
+## 1. Tabla de Antes y Después
+
+| Parte del Programa | Problema Detectado | Cambio Implementado | Beneficio Principal |
+| :--- | :--- | :--- | :--- |
+| **Mensajes en pantalla** | La secuencia `mov edx, OFFSET`, `call WriteString` y `call Crlf` se repetía en 64 puntos del código[cite: 1]. | Creación de las macros `mImprimirMensaje` y `mImprimirLinea` (preservando `EDX` con `push`/`pop`)[cite: 1]. | Reducción de 108 líneas de código redundantes; centralización del formato de salida[cite: 1]. |
+| **Registros en procedimientos** | 11 procedimientos gestionaban manualmente el respaldo y restauración con `push` y `pop` (58 líneas)[cite: 1]. | Implementación sistemática de la directiva **`PROC USES`**[cite: 1]. | El ensamblador genera automáticamente el código de pila seguro, eliminando riesgos de desbalanceo[cite: 1]. |
+| **Copia de cadenas** | El procedimiento `copiarCadenaCompleta` ocupaba 16 líneas gestionando registros para llamadas cortas repetidas 4 veces[cite: 1]. | Creación de la macro `mCopiarCadena` con la etiqueta local `LOCAL ciclo_copia`[cite: 1]. | Se elimina la sobrecarga de `call`, `ret` y manipulación manual de pila (ahorro de 6 líneas)[cite: 1]. |
+| **Lectura de teclado** | `leerLineaTeclado` mezclaba tareas de gestión de registros directamente con la lógica de entrada[cite: 2]. | Creación de la macro `mLeeTeclado` combinada con `USES ecx edx` en el procedimiento[cite: 2]. | Mayor modularidad y separación de responsabilidades en la lectura de consola[cite: 2]. |
+| **Carga desde archivo** | `convertirLineaARegistro` leía un campo extra inválido y los archivos con saltos de línea manuales (`CR/LF`) solían rechazarse[cite: 2]. | Supresión de lecturas sobrantes e inclusión de filtros lógicos en `copiarCampoHastaDelimitador` para omitir caracteres 13 y 10[cite: 2]. | El sistema procesa de forma tolerante archivos de texto editados externamente[cite: 2]. |
+
+---
+
+## 2. Fragmentos Representativos
+
+### 2.1 Procedimiento Reutilizado: `pedirEnteroEnRango`
+Recibe el mensaje en `EDX`, el límite máximo en `EBX` y el mínimo en `ECX`[cite: 3]. Devuelve el valor numérico en `EAX` y reporta errores mediante la bandera de acarreo (`CF`)[cite: 3].
+
+```assembly
+pedirEnteroEnRango PROC USES esi
+    call WriteString
+    call leerLineaTeclado
+    mov esi, OFFSET inBuf
+    call convertirCadenaAEntero
+    jc pedirEnteroEnRangoError
+    cmp eax, ecx
+    jb pedirEnteroEnRangoError
+    clc
+    jmp pedirEnteroEnRangoFin
+pedirEnteroEnRangoError:
+    mImprimirLinea msgEntInv
+    xor eax, eax
+    stc
+pedirEnteroEnRangoFin:
+    ret
+pedirEnteroEnRango ENDP
+```[cite: 3]
+
+**Puntos clave de uso en `Main.asm`:**
+* **`registrarProducto`:** Validación de existencia inicial (0 a 100)[cite: 3].
+* **`recibirMercancia`:** Unidades recibidas (1 a 100)[cite: 3].
+* **`venderProducto`:** Cantidad de salida a comercializar (1 a 100)[cite: 3].
+
+---
+
+### 2.2 Macros de Salida: `mImprimirMensaje` y `mImprimirLinea`
+```assembly
+mImprimirMensaje MACRO mensaje
+    push edx
+    mov edx, OFFSET mensaje
+    call WriteString
+    pop edx
+ENDM
+
+mImprimirLinea MACRO mensaje
+    mImprimirMensaje mensaje
+    call Crlf
+ENDM
+```[cite: 4]
+
+* **`mImprimirLinea`** reduce bloques repetitivos de 3 instrucciones a una sola línea limpia.
+* La macro **`mCopiarCadena`** utiliza etiquetas locales (`LOCAL`) para permitir expansiones seguras múltiples dentro de procedimientos complejos como `registrarProducto`[cite: 5].
+
+---
+
+### 2.3 Procedimiento con Directiva `USES`: `convertirEnteroACadena`
+```assembly
+convertirEnteroACadena PROC USES ebx ecx edx edi
+    mov ebx, 10
+    ; --- cuerpo de conversión ---
+    mov BYTE PTR [edi], 0
+    ret
+convertirEnteroACadena ENDP
+```[cite: 6]
+
+Gracias a `USES`, el ensamblador gestiona de forma automática los registros salvaguardados al entrar y salir de la rutina, reduciendo verbosidad y errores humanos[cite: 6].
+
+---
+
+## 3. Comparación de Líneas de Código Fuente
+
+| Bloque Analizado | Versión Anterior | Versión Actual (Unidad 3) | Diferencia Neta |
+| :--- | :---: | :---: | :---: |
+| Mensajes sin salto de línea (20 usos)[cite: 6] | 40[cite: 6] | 20[cite: 6] | -20[cite: 6] |
+| Mensajes con salto de línea (44 usos)[cite: 6] | 132[cite: 6] | 44[cite: 6] | -88[cite: 6] |
+| Bloques `push`/`pop` manuales en 11 procedimientos[cite: 6] | 58[cite: 6] | 0[cite: 6] | -58[cite: 6] |
+| Transición de rutina de copia a macro[cite: 6] | 16[cite: 6] | 10[cite: 6] | -6[cite: 6] |
+| Declaración de macros nuevas[cite: 6, 7] | 0[cite: 6] | 10[cite: 6] | +10[cite: 6] |
+| Gestión de teclado (`mLeeTeclado`)[cite: 7] | 10[cite: 7] | 13[cite: 7] | +3[cite: 7] |
+| Robustez del cargador y manejo de `CR/LF`[cite: 7] | - | - | aprox. +4[cite: 7] |
+| **Impacto Total Estimado** | — | — | **Aprox. -155 líneas**[cite: 7] |
+
+---
 ## 🛠️ Tecnologías y Entorno
 
 - **Lenguaje:** Ensamblador (x86 - 32 bits)
